@@ -1,6 +1,6 @@
 package com.libertex.wallet.controller;
 
-import com.libertex.wallet.entity.Client;
+import com.libertex.wallet.dto.WalletDto;
 import com.libertex.wallet.service.WalletService;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -12,6 +12,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.math.BigDecimal;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -23,7 +24,7 @@ public class WalletControllerTest extends BaseControllerTest {
 
     @Test
     void testGetWalletStatusByClientId() throws Exception {
-        when(walletService.getWalletStatusByClientId(1L)).thenReturn(new BigDecimal("101"));
+        when(walletService.getWalletMoneyByClientId(1L)).thenReturn(new BigDecimal("101"));
 
         mvc.perform(MockMvcRequestBuilders.get("/wallet/1")
                 .secure(false)
@@ -33,19 +34,15 @@ public class WalletControllerTest extends BaseControllerTest {
     }
 
     @Test
-    void testAddToWalletByClientId() throws Exception {
+    void testAddToWallet() throws Exception {
+        WalletDto walletDto = new WalletDto(1L, new BigDecimal("2"));
+        when(walletService.addToWallet(any()))
+                .thenReturn(walletDto);
+        String clientJSON = objectMapper.writeValueAsString(walletDto);
 
-        Client client = createClient(1L, "TestClient", new BigDecimal("103"));
-        when(walletService.addToWalletByClientId(1L, new BigDecimal("2")))
-                .thenReturn(client);
-        String clientJSON = objectMapper.writeValueAsString(client);
-
-//        mvc.perform(MockMvcRequestBuilders.put("/wallet/1/add"))
-
-
-        mvc.perform(MockMvcRequestBuilders.put("/wallet/1/add")
+        mvc.perform(MockMvcRequestBuilders.put("/wallet/add")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(2))
+                .content(objectMapper.writeValueAsString(walletDto))
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(result -> clientJSON.equals(result));
@@ -53,19 +50,16 @@ public class WalletControllerTest extends BaseControllerTest {
 
     @Test
     void testSubFromWalletByClientId() throws Exception {
+        WalletDto walletDto = new WalletDto(1L, new BigDecimal("99"));
+        when(walletService.addToWallet(any()))
+                .thenReturn(walletDto);
+        String clientJSON = objectMapper.writeValueAsString(walletDto);
 
-        Client client = createClient(1L, "TestClient", new BigDecimal("99"));
-        when(walletService.addToWalletByClientId(1L, new BigDecimal("2")))
-                .thenReturn(client);
-        String clientJSON = objectMapper.writeValueAsString(client);
-
-
-        mvc.perform(MockMvcRequestBuilders.put("/wallet/1/sub")
+        mvc.perform(MockMvcRequestBuilders.put("/wallet/sub")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(2))
+                .content(objectMapper.writeValueAsString(walletDto))
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(result -> clientJSON.equals(result));
     }
 }
-

@@ -1,6 +1,6 @@
 package com.libertex.wallet.service;
 
-import com.libertex.wallet.entity.Client;
+import com.libertex.wallet.dto.WalletDto;
 import org.junit.jupiter.api.Test;;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,39 +20,33 @@ public class WalletServiceTest {
     @TestConfiguration
     static class WalletServiceTestConfiguration {
         @Bean
-        public ClientService clientService() {
-            return new ClientService();
-        }
-
-        @Bean
         public WalletService walletService() {
             return new WalletService();
         }
     }
 
     @Autowired
-    private ClientService clientService;
-
-    @Autowired
     private WalletService walletService;
 
     @Test
     public void testGetWalletStatusByClientId() {
-        BigDecimal wallet = walletService.getWalletStatusByClientId(1L);
+        BigDecimal wallet = walletService.getWalletMoneyByClientId(1L);
         assertThat(wallet).isEqualTo("20.10");
     }
 
     @Test
     public void testAddToWalletByClientId() {
-        Client client = walletService.addToWalletByClientId(1L, new BigDecimal("10.1"));
-        assertNotNull(client);
-        assertThat(client.getWallet()).isEqualTo("30.20");
+        WalletDto walletDto = new WalletDto(1L, new BigDecimal("10.1"));
+        WalletDto wallet = walletService.addToWallet(walletDto);
+        assertNotNull(wallet);
+        assertThat(wallet.getMoney()).isEqualTo("30.20");
     }
 
     @Test
     public void testSubFromWalletByClientId() {
-        Client client = walletService.subFromWalletByClientId(2L, new BigDecimal("1"));
-        assertNotNull(client);
-        assertThat(client.getWallet()).isEqualTo("9999.55");
+        WalletDto walletDto = new WalletDto(1L, new BigDecimal("10.1"));
+        WalletDto wallet = walletService.subFromWallet(walletDto);
+        assertNotNull(wallet);
+        assertThat(wallet.getMoney()).isEqualTo("10.00");
     }
 }

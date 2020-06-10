@@ -1,7 +1,7 @@
 package com.libertex.wallet.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.libertex.wallet.entity.Client;
+import com.libertex.wallet.dto.ClientDto;
 import com.libertex.wallet.service.ClientService;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -13,7 +13,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 import static org.mockito.Mockito.when;
@@ -35,7 +34,7 @@ class ClientControllerTest extends BaseControllerTest {
 
     @Test
     void testGetAllClients() throws Exception {
-        List<Client> clientList = createClientList();
+        List<ClientDto> clientList = createClientList();
         when(clientService.getAll()).thenReturn(clientList);
         String clientListJSON = objectMapper.writeValueAsString(clientList);
 
@@ -49,20 +48,19 @@ class ClientControllerTest extends BaseControllerTest {
     @Test
     void testGetClientById() throws Exception {
         when(clientService.findById(1L))
-                .thenReturn(createClient(1L, "TestClient", new BigDecimal(101)));
+                .thenReturn(createClient(1L, "TestClient"));
 
         mvc.perform(MockMvcRequestBuilders.get("/client/1")
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("id").value(1L))
-                .andExpect(jsonPath("name").value("TestClient"))
-                .andExpect(jsonPath("wallet").value(101L));
+                .andExpect(jsonPath("name").value("TestClient"));
     }
 
     @Test
     void testCreateClient() throws Exception {
-        Client client = createClient(1L, "TestClient", new BigDecimal(101));
+        ClientDto client = createClient(1L, "TestClient");
         when(clientService.createClient(client)).thenReturn(client);
         String clientJSON = objectMapper.writeValueAsString(client);
 
@@ -77,8 +75,8 @@ class ClientControllerTest extends BaseControllerTest {
 
     @Test
     void testUpdateClient() throws Exception {
-        Client clientBefore = createClient(1L, "TestClientBefore", new BigDecimal(101));
-        Client clientAfter = createClient(1L, "TestClientAfter", new BigDecimal(102));
+        ClientDto clientBefore = createClient(1L, "TestClientBefore");
+        ClientDto clientAfter = createClient(1L, "TestClientAfter");
         when(clientService.updateClient(clientBefore)).thenReturn(clientAfter);
         String clientBeforeJSON = objectMapper.writeValueAsString(clientBefore);
         String clientAfterJSON = objectMapper.writeValueAsString(clientAfter);

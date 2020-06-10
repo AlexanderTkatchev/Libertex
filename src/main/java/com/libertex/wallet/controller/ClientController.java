@@ -1,6 +1,6 @@
 package com.libertex.wallet.controller;
 
-import com.libertex.wallet.entity.Client;
+import com.libertex.wallet.dto.ClientDto;
 import com.libertex.wallet.service.ClientService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -29,29 +29,29 @@ public class ClientController {
 
     @GetMapping
     @ApiOperation(value = "List of all clients", response = ArrayList.class)
-    public List<Client> getAllClients() {
+    public List<ClientDto> getAllClients() {
         log.debug("List of all clients controller");
         return clientService.getAll();
     }
 
     @GetMapping(value = "/{id}")
-    @ApiOperation(value = "Get client info by ID", response = Client.class)
-    public Client getClientById(@PathVariable final Long id) {
+    @ApiOperation(value = "Get client info by ID", response = ClientDto.class)
+    public ClientDto getClientById(@PathVariable final Long id) {
         log.debug("Get client info by ID = " + id);
         return clientService.findById(id);
     }
 
     @PostMapping
-    @ApiOperation(value = "Create client", response = Client.class)
-    public Client createClient(@Valid @RequestBody final Client client) {
-        log.debug("Create client ID=" + client.getId() + " NAME=" + client.getName() + " WALLET=" + client.getWallet());
+    @ApiOperation(value = "Create client", response = ClientDto.class)
+    public ClientDto createClient(@Valid @RequestBody final ClientDto client) {
+        log.debug("Create client ID=" + client.getId() + " NAME=" + client.getName());
         return clientService.createClient(client);
     }
 
     @PutMapping
-    @ApiOperation(value = "Update client info", response = Client.class)
-    public Client updateClient(@Valid @RequestBody final Client client) {
-        log.debug("Update client ID=" + client.getId() + " NAME=" + client.getName() + " WALLET=" + client.getWallet());
+    @ApiOperation(value = "Update client info", response = ClientDto.class)
+    public ClientDto updateClient(@Valid @RequestBody final ClientDto client) {
+        log.debug("Update client ID=" + client.getId() + " NAME=" + client.getName());
         return clientService.updateClient(client);
     }
 
